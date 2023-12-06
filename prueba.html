@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Subida de Imágenes</title>
+  </head>
+  <body>
+    <h1>Subir Imagen JPG</h1>
+    <form id="uploadForm">
+      <input type="file" id="imageInput" accept="image/jpeg" />
+      <button type="submit">Enviar Imagen</button>
+    </form>
+    <div id="response"></div>
+  </body>
+  <script>
+    document
+      .getElementById("uploadForm")
+      .addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        var formData = new FormData();
+        var imageFile = document.getElementById("imageInput").files[0];
+        formData.append("file", imageFile);
+
+        fetch("https://woundapi.onrender.com/predict/", {
+          method: "POST",
+          headers: {
+            Accept: "application/json", // Este encabezado indica el tipo de respuesta esperado
+            cors: "no-cors", // Este encabezado indica que no se usa CORS
+          },
+          body: formData,
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(
+                "Network response was not ok " + response.statusText
+              );
+            }
+            return response.json();
+          })
+          .then((data) => {
+            document.getElementById("response").innerHTML =
+              "Predicción: " + data.prediction;
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            document.getElementById("response").innerHTML =
+              "Error: " + error.message;
+          });
+      });
+  </script>
+</html>
